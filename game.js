@@ -13,36 +13,38 @@ const timerBoard = timerEl ? timerEl.parentElement : null;
 // Audio Context (Synthesized Web Audio API)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// Image Assets
+// Image Assets — Horror Sprite Sheet
 const fruitSprite = new Image();
-fruitSprite.src = 'fruits.png';
+fruitSprite.src = 'horror_fruits.png';
 
-// Fruit Sprite Sheet Data: 5 columns x 3 rows (1024 x 682)
-// Mapping each fruit sprite to authentic juice/particle colors
+// Horror Fruit Sprite Sheet Data: 5 columns x 3 rows (800 x 480)
+// Row 0: Evil Watermelon, Stitched Apple, Screaming Banana, Skull Pineapple, Zombie Strawberry
+// Row 1: Crazy Kiwi, Zombie Orange, Sinister Grapes, Evil Watermelon alt, Stitched Apple alt
+// Row 2: Screaming Banana alt, Skull Pineapple alt, Zombie Strawberry alt, Crazy Kiwi alt, Zombie Orange alt
 const fruitData = [
     // Row 0
     [
-        { name: 'Apple', color: '#e74c3c', splash: '#ff4d4d' },
-        { name: 'Banana', color: '#f1c40f', splash: '#ffeaa7' },
-        { name: 'Orange', color: '#e67e22', splash: '#ffa502' },
-        { name: 'Watermelon', color: '#e74c3c', splash: '#2ed573' },
-        { name: 'Strawberry', color: '#ff3838', splash: '#ff7675' }
+        { name: 'Evil Watermelon',   color: '#2ed573', splash: '#8b0000' },
+        { name: 'Stitched Apple',    color: '#c0392b', splash: '#6ab04c' },
+        { name: 'Screaming Banana',  color: '#f9ca24', splash: '#8b6914' },
+        { name: 'Skull Pineapple',   color: '#d4a017', splash: '#2d8a4e' },
+        { name: 'Zombie Strawberry', color: '#c0392b', splash: '#2ed573' }
     ],
     // Row 1
     [
-        { name: 'Pineapple', color: '#f5cd79', splash: '#f7b731' },
-        { name: 'Grapes', color: '#8854d0', splash: '#a55eea' },
-        { name: 'Mango', color: '#fa8231', splash: '#fed330' },
-        { name: 'Blueberry', color: '#3867d6', splash: '#4b7bec' },
-        { name: 'Pear', color: '#badc58', splash: '#6ab04c' }
+        { name: 'Crazy Kiwi',        color: '#6ab04c', splash: '#a29bfe' },
+        { name: 'Zombie Orange',     color: '#e67e22', splash: '#8b0000' },
+        { name: 'Sinister Grapes',   color: '#6c3483', splash: '#fd79a8' },
+        { name: 'Evil Watermelon',   color: '#27ae60', splash: '#8b0000' },
+        { name: 'Stitched Apple',    color: '#e74c3c', splash: '#55efc4' }
     ],
     // Row 2
     [
-        { name: 'Lemon', color: '#f9ca24', splash: '#f6e58d' },
-        { name: 'Cherry', color: '#eb4d4b', splash: '#ff7979' },
-        { name: 'Kiwi', color: '#6ab04c', splash: '#badc58' },
-        { name: 'Peach', color: '#ffbe76', splash: '#f0932b' },
-        { name: 'Dragonfruit', color: '#e056fd', splash: '#ffffff' }
+        { name: 'Screaming Banana',  color: '#f1c40f', splash: '#2d3436' },
+        { name: 'Skull Pineapple',   color: '#f39c12', splash: '#6c3483' },
+        { name: 'Zombie Strawberry', color: '#e84393', splash: '#2ed573' },
+        { name: 'Crazy Kiwi',        color: '#00b894', splash: '#d63031' },
+        { name: 'Zombie Orange',     color: '#e17055', splash: '#2d8a4e' }
     ]
 ];
 
@@ -250,9 +252,9 @@ class Entity {
         this.x = Math.random() * (canvas.width * 0.7) + canvas.width * 0.15;
         this.y = canvas.height + this.radius;
         
-        // Target an arc across the upper third of the screen
-        const targetX = canvas.width * (0.2 + Math.random() * 0.6);
-        const targetY = canvas.height * (0.12 + Math.random() * 0.22);
+        // Target a higher arc across the upper portion of the screen
+        const targetX = canvas.width * (0.15 + Math.random() * 0.7);
+        const targetY = canvas.height * (0.04 + Math.random() * 0.18);
         
         // Calculate physics velocity to smoothly reach target peak
         const timeToPeak = Math.max(1.6, 2.4 - (difficultyMultiplier * 0.2));
@@ -567,11 +569,11 @@ function drawBladeTrail() {
         const p2 = sliceTrail[i];
         const progress = i / sliceTrail.length; // 0 at tail, 1 at tip
         
-        // Outer glowing blade
+        // Outer glowing ectoplasm blade (slime green glow)
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
         ctx.lineTo(p2.x, p2.y);
-        ctx.strokeStyle = `rgba(0, 242, 254, ${progress * 0.8})`;
+        ctx.strokeStyle = `rgba(46, 213, 115, ${progress * 0.85})`;
         ctx.lineWidth = progress * 10 + 2;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -593,8 +595,8 @@ function drawBladeTrail() {
     ctx.beginPath();
     ctx.arc(tip.x, tip.y, 4, 0, Math.PI * 2);
     ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = '#00f2fe';
-    ctx.shadowBlur = 12;
+    ctx.shadowColor = '#2ed573';
+    ctx.shadowBlur = 16;
     ctx.fill();
     ctx.restore();
 }
@@ -623,6 +625,11 @@ function gameLoop(timestamp) {
     lastTime = timestamp;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw a subtle dark translucent wash so the CSS graveyard background
+    // shows through the canvas while keeping fruits clearly visible
+    ctx.fillStyle = 'rgba(4, 2, 10, 0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     if (gameState === 'playing') {
         // Precise 60-second countdown timer
