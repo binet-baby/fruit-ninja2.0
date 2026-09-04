@@ -1,3 +1,24 @@
+/* ==========================================================================
+   Fruit Ninja 2.0 - Professional Arcade Interface Theme
+   High-contrast, smooth rounded corners, consistent spacing, arcade bezel
+   ========================================================================== */
+
+:root {
+    --arcade-bg: #090b10;
+    --arcade-bezel: #252a38;
+    --arcade-bezel-accent: #f5cd79;
+    --arcade-gold: #f5cd79;
+    --arcade-gold-glow: rgba(245, 205, 121, 0.4);
+    --arcade-cyan: #00f2fe;
+    --arcade-cyan-glow: rgba(0, 242, 254, 0.45);
+    --arcade-red: #ff4757;
+    --arcade-red-glow: rgba(255, 71, 87, 0.5);
+    --arcade-pill-bg: rgba(12, 15, 24, 0.85);
+    --arcade-border-radius: 28px;
+    --card-border-radius: 24px;
+    --pill-border-radius: 16px;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -8,17 +29,62 @@
 }
 
 body {
-    background-color: #222;
+    background-color: var(--arcade-bg);
+    /* Dark arcade booth surround with subtle dot matrix */
+    background: radial-gradient(circle at center, #181d2a 0%, #0c0e16 65%, #050609 100%);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
 }
+
+/* ==========================================================================
+   Arcade Cabinet Screen Bezel Frame
+   ========================================================================== */
 
 #game-container {
     position: relative;
-    width: 100vw;
-    height: 100vh;
-    background: radial-gradient(circle, #f39c12 0%, #d35400 100%); /* Bright high-contrast background */
+    width: min(calc(100vw - 48px), 1400px);
+    height: min(calc(100vh - 48px), 860px);
+    /* Vibrant in-game wood/fruit sunburst */
+    background: radial-gradient(circle at center, #f39c12 0%, #d35400 70%, #962d00 100%);
     overflow: hidden;
+    
+    /* Smooth rounded corners */
+    border-radius: var(--arcade-border-radius);
+    
+    /* Multi-layered arcade bezel border */
+    border: 4px solid var(--arcade-bezel);
+    outline: 2px solid rgba(245, 205, 121, 0.4);
+    outline-offset: -6px;
+    
+    /* Arcade cabinet chassis shadows + inner glass bezel depth */
+    box-shadow: 
+        0 0 0 6px #10121a,
+        0 0 0 8px rgba(255, 255, 255, 0.06),
+        0 25px 60px rgba(0, 0, 0, 0.9),
+        0 0 45px rgba(243, 156, 18, 0.22),
+        inset 0 0 50px rgba(0, 0, 0, 0.45),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+/* Subtle arcade corner bezel rivets */
+#game-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--arcade-border-radius);
+    pointer-events: none;
+    z-index: 8;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 
 #game-canvas {
@@ -26,7 +92,12 @@ body {
     width: 100%;
     height: 100%;
     z-index: 1;
+    cursor: crosshair;
 }
+
+/* ==========================================================================
+   UI Layer & Heads-Up Display (HUD)
+   ========================================================================== */
 
 #ui-layer {
     position: absolute;
@@ -34,9 +105,93 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Let clicks pass through to canvas when needed */
+    pointer-events: none;
     z-index: 10;
 }
+
+#hud {
+    position: absolute;
+    top: 22px;
+    left: 24px;
+    right: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+}
+
+#hud.hidden {
+    display: none;
+}
+
+/* High-Contrast Arcade HUD Badges */
+.hud-pill {
+    background: var(--arcade-pill-bg);
+    border: 2px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--pill-border-radius);
+    padding: 10px 22px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 0 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hud-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    color: #a4b0be;
+    text-transform: uppercase;
+}
+
+.hud-value {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+    font-family: 'Arial Black', Impact, sans-serif;
+}
+
+/* Score Styling */
+.score-board .hud-value {
+    color: var(--arcade-gold);
+    text-shadow: 0 0 14px var(--arcade-gold-glow);
+}
+
+/* Timer Styling */
+.timer-board .hud-value {
+    color: var(--arcade-cyan);
+    text-shadow: 0 0 14px var(--arcade-cyan-glow);
+}
+
+/* Critical Timer Warning (<= 10 seconds remaining) */
+.timer-board.warning {
+    border-color: var(--arcade-red);
+    box-shadow: 
+        0 8px 24px rgba(255, 71, 87, 0.35),
+        0 0 20px var(--arcade-red-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    animation: timerPulse 0.8s infinite alternate ease-in-out;
+}
+
+.timer-board.warning .hud-value {
+    color: var(--arcade-red);
+    text-shadow: 0 0 16px var(--arcade-red-glow);
+}
+
+@keyframes timerPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* ==========================================================================
+   Screen Modals (Start & Game Over)
+   ========================================================================== */
 
 .screen {
     position: absolute;
@@ -45,12 +200,13 @@ body {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(6, 8, 14, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: white;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: auto;
 }
 
@@ -59,72 +215,178 @@ body {
     pointer-events: none;
 }
 
-.screen h1 {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    text-shadow: 2px 2px 4px #000;
-    color: #f1c40f;
+/* High-Contrast Arcade Modal Card */
+.arcade-card {
+    background: linear-gradient(165deg, rgba(22, 27, 38, 0.95) 0%, rgba(10, 13, 20, 0.98) 100%);
+    border: 2px solid rgba(245, 205, 121, 0.45);
+    border-radius: var(--card-border-radius);
+    padding: 40px 48px;
+    width: min(90%, 480px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.85),
+        0 0 35px rgba(243, 156, 18, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-.screen p {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+/* Arcade Category Badge */
+.arcade-badge {
+    padding: 5px 18px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: rgba(245, 205, 121, 0.12);
+    border: 1px solid rgba(245, 205, 121, 0.5);
+    color: var(--arcade-gold);
 }
 
-button {
-    padding: 15px 40px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-    background-color: #e74c3c;
-    border: none;
+.arcade-badge.game-over-badge {
+    background: rgba(255, 71, 87, 0.12);
+    border-color: rgba(255, 71, 87, 0.5);
+    color: var(--arcade-red);
+}
+
+/* Arcade Headings */
+.arcade-card h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Arial Black', Impact, sans-serif;
+    margin: 0;
+    background: linear-gradient(180deg, #ffffff 0%, #f5cd79 55%, #e67e22 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+}
+
+/* Instructions List */
+.instructions-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px 0;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #e4e7eb;
+    font-weight: 600;
+    text-align: left;
+}
+
+.item-icon {
+    font-size: 1.25rem;
+}
+
+/* Final Score Board */
+.final-score-container {
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px 36px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.final-score-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #a4b0be;
+    text-transform: uppercase;
+}
+
+.final-score-value {
+    font-size: 3.6rem;
+    font-weight: 900;
+    font-family: 'Arial Black', Impact, sans-serif;
+    color: var(--arcade-gold);
+    text-shadow: 0 0 22px var(--arcade-gold-glow);
+    line-height: 1;
+}
+
+.game-over-reason {
+    font-size: 1.15rem;
+    color: #ff6b81;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Arcade Push Button (Tactile 3D Action)
+   ========================================================================== */
+
+.arcade-btn {
+    padding: 16px 48px;
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Segoe UI', sans-serif;
+    color: #ffffff;
+    background: linear-gradient(180deg, #ff4757 0%, #ee5253 45%, #b33939 100%);
+    border: 2px solid rgba(255, 255, 255, 0.35);
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    transition: transform 0.1s, background-color 0.2s;
+    box-shadow: 
+        0 6px 0 #7f1d1d,
+        0 12px 25px rgba(238, 82, 83, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.2s ease;
     pointer-events: auto;
 }
 
-button:hover {
-    background-color: #c0392b;
-    transform: scale(1.05);
+.arcade-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 0 #7f1d1d,
+        0 18px 30px rgba(238, 82, 83, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-button:active {
-    transform: scale(0.95);
+.arcade-btn:active {
+    transform: translateY(4px);
+    box-shadow: 
+        0 2px 0 #7f1d1d,
+        0 6px 12px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-#hud {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 2rem;
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    pointer-events: none;
-}
+/* ==========================================================================
+   Animations
+   ========================================================================== */
 
-#hud.hidden {
-    display: none;
-}
-
-/* Animations */
 @keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+    0% { transform: translate(2px, 2px) rotate(0deg); }
+    10% { transform: translate(-2px, -3px) rotate(-1deg); }
+    20% { transform: translate(-4px, 0px) rotate(1deg); }
+    30% { transform: translate(4px, 3px) rotate(0deg); }
+    40% { transform: translate(2px, -2px) rotate(1deg); }
+    50% { transform: translate(-2px, 3px) rotate(-1deg); }
+    60% { transform: translate(-4px, 2px) rotate(0deg); }
+    70% { transform: translate(4px, 2px) rotate(-1deg); }
+    80% { transform: translate(-2px, -2px) rotate(1deg); }
+    90% { transform: translate(2px, 3px) rotate(0deg); }
+    100% { transform: translate(2px, -3px) rotate(-1deg); }
 }
 
 .shake-animation {
@@ -133,7 +395,7 @@ button:active {
 
 @keyframes flash {
     0% { background-color: rgba(255, 255, 255, 0); }
-    50% { background-color: rgba(255, 255, 255, 0.8); }
+    50% { background-color: rgba(255, 255, 255, 0.85); }
     100% { background-color: rgba(255, 255, 255, 0); }
 }
 
@@ -141,8 +403,58 @@ button:active {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: var(--arcade-border-radius);
     background-color: transparent;
     animation: flash 0.5s;
     pointer-events: none;
-    z-index: 5;
+    z-index: 9;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+
+@media (max-width: 680px), (max-height: 550px) {
+    #game-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+        outline: none;
+        box-shadow: none;
+    }
+    
+    #game-container::before {
+        display: none;
+    }
+
+    #hud {
+        top: 14px;
+        left: 14px;
+        right: 14px;
+    }
+
+    .hud-pill {
+        padding: 8px 16px;
+        gap: 8px;
+    }
+
+    .hud-value {
+        font-size: 1.75rem;
+    }
+
+    .arcade-card {
+        padding: 24px 20px;
+        width: 92%;
+        gap: 16px;
+    }
+
+    .arcade-card h1 {
+        font-size: 2.2rem;
+    }
+
+    .arcade-btn {
+        padding: 14px 36px;
+        font-size: 1.1rem;
+    }
 }
