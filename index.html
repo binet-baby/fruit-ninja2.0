@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fruit Ninja 2.0</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="ui-layer">
+            <div id="hud" class="hidden">
+                <div class="score-board">Score: <span id="score">0</span></div>
+                <div class="timer-board">Time: <span id="timer">60</span></div>
+            </div>
+
+            <div id="start-screen" class="screen active">
+                <h1>Fruit Ninja 2.0</h1>
+                <p>Swipe to slice fruits. Avoid bombs!</p>
+                <p>You have 60 seconds.</p>
+                <button id="start-btn">Play Now</button>
+            </div>
+
+            <div id="game-over-screen" class="screen hidden">
+                <h1>Game Over!</h1>
+                <p>Final Score: <span id="final-score">0</span></p>
+                <p id="game-over-reason">Time's up!</p>
+                <button id="restart-btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
