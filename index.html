@@ -20,9 +20,12 @@
         <div id="ui-layer">
             <!-- In-Game HUD -->
             <div id="hud" class="hidden">
-                <div class="hud-pill score-board">
-                    <span class="hud-label">SCORE</span>
-                    <span id="score" class="hud-value">0</span>
+                <div class="hud-left-group">
+                    <button id="game-back-btn" class="hud-icon-btn back-arrow-btn" title="Back / Pause" aria-label="Back / Pause">⬅️</button>
+                    <div class="hud-pill score-board">
+                        <span class="hud-label">SCORE</span>
+                        <span id="score" class="hud-value">0</span>
+                    </div>
                 </div>
                 <div class="hud-pill lives-board">
                     <span class="hud-label">LIVES</span>
@@ -96,6 +99,20 @@
                     </div>
                     
                     <button id="settings-back-btn" class="arcade-btn">⬅️ Back to Home</button>
+                </div>
+            </div>
+
+            <!-- Pause / Quit Confirmation Menu -->
+            <div id="pause-screen" class="screen hidden">
+                <div class="arcade-card pause-card">
+                    <div class="arcade-badge">⏸️ GAME PAUSED</div>
+                    <h2 class="pause-title">Game Paused</h2>
+                    <p class="pause-subtitle">Do you want to continue playing or quit to Home Page?</p>
+                    
+                    <div class="pause-actions">
+                        <button id="pause-continue-btn" class="arcade-btn continue-btn">▶️ Continue Game</button>
+                        <button id="pause-quit-btn" class="arcade-btn quit-btn secondary-btn">🏠 Quit to Home Page</button>
+                    </div>
                 </div>
             </div>
 
