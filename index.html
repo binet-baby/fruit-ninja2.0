@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fruit Ninja 2.0 — Horror Edition</title>
+    <title>Fruit Ninja</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,6 +18,7 @@
 
         <!-- UI Overlay -->
         <div id="ui-layer">
+            <!-- In-Game HUD -->
             <div id="hud" class="hidden">
                 <div class="hud-pill score-board">
                     <span class="hud-label">SCORE</span>
@@ -31,30 +32,74 @@
                     <span class="hud-label">TIME</span>
                     <span id="timer" class="hud-value">45</span>
                 </div>
+                <button id="hud-settings-btn" class="hud-icon-btn" title="Settings" aria-label="Settings">⚙️</button>
             </div>
 
-            <div id="start-screen" class="screen active">
-                <div class="arcade-card">
+            <!-- Home Page Screen -->
+            <div id="home-screen" class="screen active">
+                <div class="arcade-card home-card">
                     <div class="arcade-badge">👻 HORROR EDITION</div>
-                    <h1>Fruit Ninja 2.0</h1>
-                    <div class="instructions-list">
-                        <div class="instruction-item">
-                            <span class="item-icon">🍉</span>
-                            <span>Swipe to slice the horror fruits</span>
-                        </div>
-                        <div class="instruction-item">
-                            <span class="item-icon">💣</span>
-                            <span>Bombs cost a life — you have 3!</span>
-                        </div>
-                        <div class="instruction-item">
-                            <span class="item-icon">⏱️</span>
-                            <span>Survive 45 spooky seconds</span>
-                        </div>
+                    <h1 class="game-title">Fruit Ninja</h1>
+                    <p class="home-subtitle">Slice the haunted fruits before time runs out!</p>
+                    
+                    <div class="home-actions">
+                        <!-- Fruit-Shaped Start Game Button -->
+                        <button id="start-game-btn" class="fruit-btn watermelon-btn" aria-label="Start Game">
+                            <span class="fruit-stem">🌱</span>
+                            <span class="fruit-btn-content">
+                                <span class="fruit-icon">🍉</span>
+                                <span class="fruit-btn-text">START GAME</span>
+                            </span>
+                            <span class="fruit-shine"></span>
+                        </button>
+                        
+                        <button id="home-settings-btn" class="arcade-btn settings-trigger-btn">
+                            ⚙️ Settings
+                        </button>
                     </div>
-                    <button id="start-btn" class="arcade-btn">Play Now 🔪</button>
                 </div>
             </div>
 
+            <!-- Compatibility alias for legacy tests -->
+            <div id="start-screen" class="hidden" style="display:none;"></div>
+
+            <!-- Settings Screen -->
+            <div id="settings-screen" class="screen hidden">
+                <div class="arcade-card settings-card">
+                    <div class="arcade-badge">⚙️ GAME SETTINGS</div>
+                    <h2 class="settings-title">Settings</h2>
+                    
+                    <div class="settings-list">
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-icon">🔊</span>
+                                <span class="setting-name">Sound Effects</span>
+                            </div>
+                            <button id="sfx-toggle" class="toggle-btn active">ON</button>
+                        </div>
+                        
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-icon">🎵</span>
+                                <span class="setting-name">Background Music</span>
+                            </div>
+                            <button id="music-toggle" class="toggle-btn active">ON</button>
+                        </div>
+                        
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <span class="setting-icon">🔇</span>
+                                <span class="setting-name">Mute All Audio</span>
+                            </div>
+                            <button id="mute-toggle" class="toggle-btn">OFF</button>
+                        </div>
+                    </div>
+                    
+                    <button id="settings-back-btn" class="arcade-btn">⬅️ Back to Home</button>
+                </div>
+            </div>
+
+            <!-- Game Over Screen -->
             <div id="game-over-screen" class="screen hidden">
                 <div class="arcade-card">
                     <div class="arcade-badge game-over-badge">💀 ROUND OVER</div>
@@ -68,7 +113,10 @@
                         <span id="final-lives" class="final-lives-value">❤️❤️❤️</span>
                     </div>
                     <p id="game-over-reason" class="game-over-reason">Time's up!</p>
-                    <button id="restart-btn" class="arcade-btn">Play Again 👻</button>
+                    <div class="game-over-actions">
+                        <button id="restart-btn" class="arcade-btn">Play Again 👻</button>
+                        <button id="home-btn" class="arcade-btn secondary-btn">Home 🏠</button>
+                    </div>
                 </div>
             </div>
         </div>
