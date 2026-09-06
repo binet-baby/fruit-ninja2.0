@@ -23,9 +23,13 @@
                     <span class="hud-label">SCORE</span>
                     <span id="score" class="hud-value">0</span>
                 </div>
+                <div class="hud-pill lives-board">
+                    <span class="hud-label">LIVES</span>
+                    <span id="lives" class="hud-value">❤️❤️❤️</span>
+                </div>
                 <div class="hud-pill timer-board">
                     <span class="hud-label">TIME</span>
-                    <span id="timer" class="hud-value">60</span>
+                    <span id="timer" class="hud-value">45</span>
                 </div>
             </div>
 
@@ -40,11 +44,11 @@
                         </div>
                         <div class="instruction-item">
                             <span class="item-icon">💣</span>
-                            <span>Avoid the cursed bombs!</span>
+                            <span>Bombs cost a life — you have 3!</span>
                         </div>
                         <div class="instruction-item">
                             <span class="item-icon">⏱️</span>
-                            <span>Survive 60 spooky seconds</span>
+                            <span>Survive 45 spooky seconds</span>
                         </div>
                     </div>
                     <button id="start-btn" class="arcade-btn">Play Now 🔪</button>
@@ -58,6 +62,10 @@
                     <div class="final-score-container">
                         <span class="final-score-label">FINAL SCORE</span>
                         <span id="final-score" class="final-score-value">0</span>
+                    </div>
+                    <div class="final-lives-row">
+                        <span class="final-score-label">LIVES REMAINING</span>
+                        <span id="final-lives" class="final-lives-value">❤️❤️❤️</span>
                     </div>
                     <p id="game-over-reason" class="game-over-reason">Time's up!</p>
                     <button id="restart-btn" class="arcade-btn">Play Again 👻</button>

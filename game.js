@@ -5,7 +5,9 @@ const gameOverScreen = document.getElementById('game-over-screen');
 const hud = document.getElementById('hud');
 const scoreEl = document.getElementById('score');
 const timerEl = document.getElementById('timer');
+const livesEl = document.getElementById('lives');
 const finalScoreEl = document.getElementById('final-score');
+const finalLivesEl = document.getElementById('final-lives');
 const gameOverReasonEl = document.getElementById('game-over-reason');
 const gameContainer = document.getElementById('game-container');
 const timerBoard = timerEl ? timerEl.parentElement : null;
@@ -103,7 +105,9 @@ function playSound(type, pitchMultiplier = 1) {
 // Game State
 let gameState = 'start'; // 'start', 'playing', 'gameover'
 let score = 0;
-let timeRemaining = 60;
+let lives = 3;
+const MAX_LIVES = 3;
+let timeRemaining = 45;
 let misses = 0;
 const MAX_MISSES = 3;
 
@@ -113,6 +117,17 @@ let particles = [];
 let floatingTexts = [];
 let sliceTrail = [];
 let isSlicing = false;
+
+// Helper to update HUD lives display
+function updateLivesDisplay() {
+    let hearts = '';
+    for (let i = 0; i < MAX_LIVES; i++) {
+        hearts += i < lives ? '❤️' : '🖤';
+    }
+    if (livesEl) {
+        livesEl.innerText = hearts;
+    }
+}
 
 // Time tracking
 let lastTime = 0;
@@ -489,8 +504,9 @@ function checkCollisions() {
             if (entity.isBomb) {
                 playSound('bomb');
                 
-                // Bomb penalty
-                score = Math.max(0, score - 50);
+                // Bomb penalty: decrease 1 life (NOT score)
+                lives = Math.max(0, lives - 1);
+                updateLivesDisplay();
                 
                 // Screen shake and flash animation
                 gameContainer.classList.remove('shake-animation', 'flash-animation');
@@ -507,7 +523,12 @@ function checkCollisions() {
                     particles.push(new Particle(entity.x, entity.y, col, 16, true));
                 }
                 
-                floatingTexts.push(new FloatingText(entity.x, entity.y, '-50 BOMB!', '#ff4757', 36));
+                floatingTexts.push(new FloatingText(entity.x, entity.y, '-1 LIFE!', '#ff4757', 36));
+                
+                if (lives <= 0) {
+                    triggerGameOver('Out of lives!');
+                    return;
+                }
             } else {
                 hitCount++;
                 score += 10;
@@ -603,9 +624,17 @@ function drawBladeTrail() {
 
 // Game Over
 function triggerGameOver(reason) {
+    if (gameState === 'gameover') return;
     gameState = 'gameover';
     isSlicing = false;
     finalScoreEl.innerText = score;
+    if (finalLivesEl) {
+        let hearts = '';
+        for (let i = 0; i < MAX_LIVES; i++) {
+            hearts += i < lives ? '❤️' : '🖤';
+        }
+        finalLivesEl.innerText = `${lives} (${hearts})`;
+    }
     gameOverReasonEl.innerText = reason;
     
     hud.classList.add('hidden');
@@ -632,9 +661,9 @@ function gameLoop(timestamp) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     if (gameState === 'playing') {
-        // Precise 60-second countdown timer
+        // Precise 45-second countdown timer
         const elapsed = (timestamp - gameStartTime) / 1000;
-        timeRemaining = Math.max(0, 60 - Math.floor(elapsed));
+        timeRemaining = Math.max(0, 45 - Math.floor(elapsed));
         timerEl.innerText = timeRemaining;
         
         if (timerBoard) {
@@ -649,7 +678,7 @@ function gameLoop(timestamp) {
             triggerGameOver("Time's up!");
         }
         
-        difficultyMultiplier = 1 + (elapsed / 60); // Scales to 2x at end of round
+        difficultyMultiplier = 1 + (elapsed / 45); // Scales to 2x at end of round
         spawnEntities();
     }
     
@@ -711,7 +740,8 @@ function gameLoop(timestamp) {
 function startGame() {
     gameState = 'playing';
     score = 0;
-    timeRemaining = 60;
+    lives = 3;
+    timeRemaining = 45;
     misses = 0;
     entities = [];
     fruitHalves = [];
@@ -724,6 +754,7 @@ function startGame() {
     
     scoreEl.innerText = score;
     timerEl.innerText = timeRemaining;
+    updateLivesDisplay();
     if (timerBoard) timerBoard.classList.remove('warning');
     
     startScreen.classList.remove('active');
