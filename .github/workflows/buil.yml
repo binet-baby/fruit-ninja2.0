@@ -26,8 +26,6 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          cmdline-tools-version: "11090757"
 
       - name: Install Dependencies (Safe Fallback)
         run: |
