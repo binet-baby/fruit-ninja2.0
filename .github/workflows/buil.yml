@@ -45,8 +45,8 @@ jobs:
             npm init -y
           fi
 
-          # Install Capacitor
-          npm install @capacitor/core @capacitor/cli @capacitor/android --save
+          # Install latest Capacitor packages
+          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/android@latest --save
 
           # Create 'www' folder for web assets and copy files into it
           mkdir -p www
@@ -61,9 +61,15 @@ jobs:
           if [ ! -d "android" ]; then
             npx cap add android
           fi
+
+          # Upgrade Gradle wrapper to version 8.5 to fix JDK 17 / jar caching bug
+          if [ -f "android/gradle/wrapper/gradle-wrapper.properties" ]; then
+            sed -i 's/gradle-.*-all.zip/gradle-8.5-all.zip/g' android/gradle/wrapper/gradle-wrapper.properties
+          fi
+
           npx cap sync android
 
-          # Build Debug APK with JDK 17 compatibility
+          # Build Debug APK
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
