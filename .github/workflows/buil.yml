@@ -18,11 +18,11 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '17'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -46,7 +46,7 @@ jobs:
           # Install Capacitor
           npm install @capacitor/core @capacitor/cli @capacitor/android --save
 
-          # Create a valid 'www' folder for web assets and move html/css/images into it
+          # Create 'www' folder for web assets and copy files into it
           mkdir -p www
           find . -maxdepth 1 \( -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -exec cp {} www/ \;
 
@@ -57,18 +57,4 @@ jobs:
 
           # Add Android platform and sync
           if [ ! -d "android" ]; then
-            npx cap add android
-          fi
-          npx cap sync android
-
-          # Build Debug APK
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleDebug
-
-      - name: Upload Debug APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: |
-            **/build/outputs/apk/debug/*.apk
+            npx cap add
