@@ -1,30 +1,38 @@
-name: Build and Deploy Spooky Game
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spooky Fruit Slicer</title>
+  <link rel="stylesheet" href="index.css">
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+</head>
+<body>
 
-on:
-  push:
-    branches: [ main ]
+  <div class="game-viewport">
+    <!-- Top Score & Timer HUD -->
+    <header class="game-header">
+      <div class="score-box">
+        <div class="score-row">
+          <img src="crop_apple.png" alt="Score Icon">
+          <span id="current-score">124</span>
+        </div>
+        <span class="best-score">BEST: 458</span>
+      </div>
+      <div class="timer-box" id="game-timer">00:45</div>
+    </header>
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+    <!-- Active Spawned Monster Fruits -->
+    <div class="monster-fruit fruit-apple" style="top: 220px; left: 440px;"></div>
+    <div class="monster-fruit fruit-banana" style="top: 200px; left: 650px;"></div>
+    <div class="monster-fruit fruit-pineapple" style="top: 480px; left: 220px;"></div>
+    <div class="monster-fruit fruit-kiwi" style="top: 600px; left: 680px;"></div>
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    <!-- Bottom HUD Footer -->
+    <footer class="game-footer">
+      <div class="skull-indicator"></div>
+    </footer>
+  </div>
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Project
-        run: npm run build
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+</body>
+</html>
