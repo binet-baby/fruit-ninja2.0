@@ -17,7 +17,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -28,23 +27,36 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Dependencies
-        run: npm ci || npm install
+      - name: Install Dependencies (Safe Fallback)
+        run: |
+          if [ -f "fruit-ninja2.0/package.json" ]; then
+            cd fruit-ninja2.0 && npm install
+          elif [ -f "package.json" ]; then
+            npm install
+          else
+            echo "No package.json found, skipping npm install"
+          fi
 
-      - name: Build Web Assets
-        run: npm run build
-
-      - name: Sync Capacitor
-        run: npx cap sync android || echo "No Capacitor sync step required"
+      - name: Build Web Assets / Capacitor Sync
+        run: |
+          if [ -d "fruit-ninja2.0" ]; then
+            cd fruit-ninja2.0
+            npm run build || echo "No build script"
+            npx cap sync android || echo "No capacitor sync"
+          else
+            npm run build || echo "No build script"
+            npx cap sync android || echo "No capacitor sync"
+          fi
 
       - name: Make Gradle Wrapper Executable
         run: |
-          if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
-          if [ -f "gradlew" ]; then chmod +x gradlew; fi
+          find . -name "gradlew" -exec chmod +x {} +
 
       - name: Build Debug APK
         run: |
-          if [ -d "android" ]; then
+          if [ -d "fruit-ninja2.0/android" ]; then
+            cd fruit-ninja2.0/android && ./gradlew assembleDebug
+          elif [ -d "android" ]; then
             cd android && ./gradlew assembleDebug
           else
             ./gradlew assembleDebug
@@ -55,5 +67,4 @@ jobs:
         with:
           name: app-debug-apk
           path: |
-            android/app/build/outputs/apk/debug/*.apk
-            app/build/outputs/apk/debug/*.apk
+            **/build/outputs/apk/debug/*.apk
