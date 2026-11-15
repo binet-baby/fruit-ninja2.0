@@ -1,38 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spooky Fruit Slicer</title>
-  <link rel="stylesheet" href="index.css">
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
-</head>
-<body>
+name: Build Android APK
 
-  <div class="game-viewport">
-    <!-- Top Score & Timer HUD -->
-    <header class="game-header">
-      <div class="score-box">
-        <div class="score-row">
-          <img src="crop_apple.png" alt="Score Icon">
-          <span id="current-score">124</span>
-        </div>
-        <span class="best-score">BEST: 458</span>
-      </div>
-      <div class="timer-box" id="game-timer">00:45</div>
-    </header>
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
-    <!-- Active Spawned Monster Fruits -->
-    <div class="monster-fruit fruit-apple" style="top: 220px; left: 440px;"></div>
-    <div class="monster-fruit fruit-banana" style="top: 200px; left: 650px;"></div>
-    <div class="monster-fruit fruit-pineapple" style="top: 480px; left: 220px;"></div>
-    <div class="monster-fruit fruit-kiwi" style="top: 600px; left: 680px;"></div>
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
 
-    <!-- Bottom HUD Footer -->
-    <footer class="game-footer">
-      <div class="skull-indicator"></div>
-    </footer>
-  </div>
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-</body>
-</html>
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Build Web Assets
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync android || echo "No Capacitor sync step required"
+
+      - name: Make Gradle Wrapper Executable
+        run: |
+          if [ -f "android/gradlew" ]; then chmod +x android/gradlew; fi
+          if [ -f "gradlew" ]; then chmod +x gradlew; fi
+
+      - name: Build Debug APK
+        run: |
+          if [ -d "android" ]; then
+            cd android && ./gradlew assembleDebug
+          else
+            ./gradlew assembleDebug
+          fi
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/debug/*.apk
