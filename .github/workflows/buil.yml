@@ -29,40 +29,36 @@ jobs:
         with:
           packages: 'platforms;android-34 build-tools;34.0.0 platform-tools'
 
-      - name: Install Dependencies (Safe Fallback)
+      - name: Setup Project and Build APK
         run: |
-          if [ -f "fruit-ninja2.0/package.json" ]; then
-            cd fruit-ninja2.0 && npm install
-          elif [ -f "package.json" ]; then
-            npm install
-          else
-            echo "No package.json found, skipping npm install"
-          fi
-
-      - name: Build Web Assets / Capacitor Sync
-        run: |
+          # Navigate into the subfolder if it exists
           if [ -d "fruit-ninja2.0" ]; then
             cd fruit-ninja2.0
-            npm run build || echo "No build script"
-            npx cap sync android || echo "No capacitor sync"
-          else
-            npm run build || echo "No build script"
-            npx cap sync android || echo "No capacitor sync"
           fi
 
-      - name: Make Gradle Wrapper Executable
-        run: |
-          find . -name "gradlew" -exec chmod +x {} +
-
-      - name: Build Debug APK
-        run: |
-          if [ -d "fruit-ninja2.0/android" ]; then
-            cd fruit-ninja2.0/android && ./gradlew assembleDebug
-          elif [ -d "android" ]; then
-            cd android && ./gradlew assembleDebug
-          else
-            ./gradlew assembleDebug
+          # Create package.json if missing
+          if [ ! -f "package.json" ]; then
+            npm init -y
           fi
+
+          # Install Capacitor
+          npm install @capacitor/core @capacitor/cli @capacitor/android --save
+
+          # Initialize Capacitor config if missing
+          if [ ! -f "capacitor.config.json" ] && [ ! -f "capacitor.config.ts" ]; then
+            npx cap init "Spooky Fruit" "com.spooky.fruit" --web-dir "." --yes
+          fi
+
+          # Add Android platform and sync
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          npx cap sync android
+
+          # Build Debug APK
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
