@@ -31,6 +31,8 @@ jobs:
 
       - name: Setup Project and Build APK
         run: |
+          set -e
+
           # Navigate into the subfolder if it exists
           if [ -d "fruit-ninja2.0/fruit-ninja2.0" ]; then
             cd fruit-ninja2.0/fruit-ninja2.0
@@ -50,11 +52,25 @@ jobs:
           mkdir -p www
           find . -maxdepth 1 \( -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -exec cp {} www/ \;
 
-          # Initialize Capacitor config with 'www' as the web-dir
+          # Initialize Capacitor config with 'www' as the web-dir if missing
           if [ ! -f "capacitor.config.json" ] && [ ! -f "capacitor.config.ts" ]; then
             npx cap init "Spooky Fruit" "com.spooky.fruit" --web-dir "www"
           fi
 
-          # Add Android platform and sync
+          # Add Android platform and sync if missing
           if [ ! -d "android" ]; then
-            npx cap add
+            npx cap add android
+          fi
+          npx cap sync android
+
+          # Build Debug APK with JDK 17 compatibility
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: |
+            **/build/outputs/apk/debug/*.apk
