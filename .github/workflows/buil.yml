@@ -62,9 +62,9 @@ jobs:
             npx cap add android
           fi
 
-          # Upgrade Gradle wrapper to version 8.5 to fix JDK 17 compatibility
+          # Upgrade Gradle wrapper to version 8.13 to match Android plugin requirements
           if [ -f "android/gradle/wrapper/gradle-wrapper.properties" ]; then
-            sed -i 's/gradle-.*-all.zip/gradle-8.5-all.zip/g' android/gradle/wrapper/gradle-wrapper.properties
+            sed -i 's|distributionUrl=.*|distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip|g' android/gradle/wrapper/gradle-wrapper.properties
           fi
 
           npx cap sync android
