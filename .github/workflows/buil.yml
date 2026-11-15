@@ -32,7 +32,9 @@ jobs:
       - name: Setup Project and Build APK
         run: |
           # Navigate into the subfolder if it exists
-          if [ -d "fruit-ninja2.0" ]; then
+          if [ -d "fruit-ninja2.0/fruit-ninja2.0" ]; then
+            cd fruit-ninja2.0/fruit-ninja2.0
+          elif [ -d "fruit-ninja2.0" ]; then
             cd fruit-ninja2.0
           fi
 
@@ -44,9 +46,13 @@ jobs:
           # Install Capacitor
           npm install @capacitor/core @capacitor/cli @capacitor/android --save
 
-          # Initialize Capacitor config safely without invalid flags
+          # Create a valid 'www' folder for web assets and move html/css/images into it
+          mkdir -p www
+          find . -maxdepth 1 \( -name "*.html" -o -name "*.css" -o -name "*.js" -o -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -exec cp {} www/ \;
+
+          # Initialize Capacitor config with 'www' as the web-dir
           if [ ! -f "capacitor.config.json" ] && [ ! -f "capacitor.config.ts" ]; then
-            npx cap init "Spooky Fruit" "com.spooky.fruit" --web-dir "."
+            npx cap init "Spooky Fruit" "com.spooky.fruit" --web-dir "www"
           fi
 
           # Add Android platform and sync
@@ -58,4 +64,11 @@ jobs:
           # Build Debug APK
           cd android
           chmod +x gradlew
-          ./
+          ./gradlew assembleDebug
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: |
+            **/build/outputs/apk/debug/*.apk
